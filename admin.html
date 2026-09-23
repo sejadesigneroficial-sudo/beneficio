@@ -158,7 +158,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <div class="page">
 
   <!-- STATS -->
-  <div class="stats-grid">
+  <div class="stats-grid" style="grid-template-columns:repeat(5,1fr)">
+    <div class="stat-card" style="--c:#00bfff;border-top:3px solid #00bfff">
+      <div class="stat-label">🟢 Online agora</div>
+      <div class="stat-val" id="sON">—</div>
+      <div class="stat-sub">visitantes ativos</div>
+    </div>
     <div class="stat-card">
       <div class="stat-label">Visitas hoje</div>
       <div class="stat-val" id="sVH">—</div>
@@ -274,6 +279,7 @@ function renderStats(s) {
   document.getElementById('sVT').textContent = s.total_visitas;
   document.getElementById('sCH').textContent = s.cadastros_hoje;
   document.getElementById('sCT').textContent = s.total_cadastros;
+  fetch('/api/online').then(r=>r.json()).then(d=>{ document.getElementById('sON').textContent = d.count; }).catch(()=>{});
 }
 
 function esc(s) {
@@ -329,6 +335,8 @@ function conectarSSE() {
         addFeedItem('visita', msg.data);
         if (msg.data.hoje !== undefined)  document.getElementById('sVH').textContent = msg.data.hoje;
         if (msg.data.total !== undefined) document.getElementById('sVT').textContent = msg.data.total;
+      } else if (msg.type === 'online') {
+        document.getElementById('sON').textContent = msg.data.count;
       }
     } catch {}
   };

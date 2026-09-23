@@ -964,6 +964,15 @@ fetch('/api/visita', {
   body: JSON.stringify({pagina: window.location.pathname})
 }).catch(()=>{});
 
+// Heartbeat: mantém usuário online no painel admin
+const _uid = (localStorage.getItem('_uid') || Math.random().toString(36).slice(2));
+localStorage.setItem('_uid', _uid);
+function _ping() {
+  fetch('/api/ping', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uid: _uid})}).catch(()=>{});
+}
+_ping();
+setInterval(_ping, 30000);
+
 // Ripple effect nos botões .btn-green
 document.querySelectorAll('.btn-green').forEach(btn => {
   btn.addEventListener('click', function(e) {

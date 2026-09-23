@@ -32,6 +32,18 @@ else:
 _subs = []
 _lock = threading.Lock()
 
+# ── Usuários online (heartbeat) ───────────────────────────────
+_online = {}   # {uid: last_seen datetime}
+_online_lock = threading.Lock()
+
+def _online_count():
+    cutoff = datetime.now() - timedelta(seconds=60)
+    with _online_lock:
+        stale = [k for k, v in _online.items() if v < cutoff]
+        for k in stale:
+            del _online[k]
+        return len(_online)
+
 # ── Conexão ──────────────────────────────────────────────────
 def get_conn():
     if USE_PG:
@@ -177,6 +189,19 @@ def admin():
     return send_from_directory('.', 'admin.html')
 
 # ── API pública ──────────────────────────────────────────────
+@app.route('/api/ping', methods=['POST'])
+def ping():
+    uid = (request.json or {}).get('uid', request.remote_addr)
+    with _online_lock:
+        _online[uid] = datetime.now()
+    count = _online_count()
+    push('online', {'count': count})
+    return jsonify(ok=True, online=count)
+
+@app.route('/api/online')
+def online():
+    return jsonify(count=_online_count())
+
 @app.route('/api/visita', methods=['POST'])
 def visita():
     ip = request.headers.get('X-Forwarded-For', request.remote_addr)

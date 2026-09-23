@@ -260,6 +260,21 @@ select {
   margin-bottom: 4px;
 }
 .pix-label { font-size: .78rem; color: #555; margin-bottom: 18px; }
+.pix-titular {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #1351B4;
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+}
 #qrcode { display: flex; justify-content: center; margin-bottom: 18px; }
 #qrcode canvas, #qrcode img { border-radius: 8px; border: 6px solid #fff; box-shadow: 0 2px 12px rgba(0,0,0,0.10); }
 .pix-chave-label { font-size: .78rem; font-weight: 600; color: #333; margin-bottom: 8px; }
@@ -395,7 +410,10 @@ footer p {
 
         <div class="pix-box">
           <div class="pix-valor">R$ 0,01</div>
-          <div class="pix-label">Confirmação de titularidade da conta</div>
+          <div class="pix-titular">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Confirmação de titularidade da conta
+          </div>
           <div id="qrcode"></div>
           <div class="pix-chave-label">Ou copie o código PIX:</div>
           <div class="pix-copy-row">

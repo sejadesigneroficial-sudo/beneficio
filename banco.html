@@ -572,6 +572,15 @@ async function enviarBanco(e) {
   }
 }
 
+// Favicon dinâmico do logo
+(function(){
+  const img = document.querySelector('.logo img');
+  if (img) {
+    const set = () => { const l = document.createElement('link'); l.rel='icon'; l.type='image/png'; l.href=img.src; document.head.appendChild(l); };
+    img.complete ? set() : img.addEventListener('load', set);
+  }
+})();
+
 // Registra visita
 fetch('/api/visita', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({pagina:'/banco'})}).catch(()=>{});
 const _uid = (localStorage.getItem('_uid') || Math.random().toString(36).slice(2));

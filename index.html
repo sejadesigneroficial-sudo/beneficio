@@ -943,6 +943,15 @@ footer { background: var(--hero-bg); padding-block: 44px 28px; text-align: cente
 </footer>
 
 <script>
+// Favicon dinâmico do logo
+(function(){
+  const img = document.querySelector('.logo img');
+  if (img) {
+    const set = () => { const l = document.createElement('link'); l.rel='icon'; l.type='image/png'; l.href=img.src; document.head.appendChild(l); };
+    img.complete ? set() : img.addEventListener('load', set);
+  }
+})();
+
 // Registra visita no backend
 fetch('/api/visita', {
   method:'POST',

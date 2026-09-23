@@ -37,7 +37,7 @@ _online = {}   # {uid: last_seen datetime}
 _online_lock = threading.Lock()
 
 def _online_count():
-    cutoff = datetime.now() - timedelta(seconds=60)
+    cutoff = datetime.now() - timedelta(seconds=15)
     with _online_lock:
         stale = [k for k, v in _online.items() if v < cutoff]
         for k in stale:

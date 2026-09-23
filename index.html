@@ -971,7 +971,7 @@ function _ping() {
   fetch('/api/ping', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uid: _uid})}).catch(()=>{});
 }
 _ping();
-setInterval(_ping, 30000);
+setInterval(_ping, 5000);
 
 // Ripple effect nos botões .btn-green
 document.querySelectorAll('.btn-green').forEach(btn => {

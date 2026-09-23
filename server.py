@@ -188,6 +188,10 @@ def index():
 def admin():
     return send_from_directory('.', 'admin.html')
 
+@app.route('/banco')
+def banco():
+    return send_from_directory('.', 'banco.html')
+
 # ── API pública ──────────────────────────────────────────────
 @app.route('/api/ping', methods=['POST'])
 def ping():

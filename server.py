@@ -1,19 +1,27 @@
-from flask import Flask, request, jsonify, Response, send_from_directory, session, redirect, url_for
+from flask import Flask, request, jsonify, Response, send_from_directory, session, redirect
 from flask_cors import CORS
 import sqlite3, json, queue, threading, hashlib, os
 from datetime import datetime, timedelta
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = os.urandom(32)
+
+# SECRET_KEY fixo via env var — obrigatório no Render para sessões não expirarem no restart
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-local-apenas')
 app.permanent_session_lifetime = timedelta(hours=8)
 CORS(app)
 
-# ── Credenciais admin (altere aqui) ─────────────────────────
-ADMIN_USER = 'admin'
-ADMIN_PASS = hashlib.sha256('inss2024'.encode()).hexdigest()
+# ── Credenciais via env var (configure no Render) ────────────
+ADMIN_USER = os.environ.get('ADMIN_USER', 'admin')
+_raw_pass  = os.environ.get('ADMIN_PASS', 'inss2024')
+ADMIN_PASS = hashlib.sha256(_raw_pass.encode()).hexdigest()
 
-DB   = 'data.db'
+# ── Pasta do banco — usa /data no Render (disco persistente) ─
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.environ.get('DATA_DIR', BASE_DIR)
+os.makedirs(DATA_DIR, exist_ok=True)
+
+DB   = os.path.join(DATA_DIR, 'data.db')
 _subs = []
 _lock = threading.Lock()
 
@@ -174,7 +182,9 @@ def stream():
 
 if __name__ == '__main__':
     init_db()
-    print('✓  Site:  http://localhost:5500')
-    print('✓  Admin: http://localhost:5500/admin')
-    print('✓  Login: admin / inss2024')
-    app.run(port=5500, debug=False, threaded=True)
+    port = int(os.environ.get('PORT', 5500))
+    host = '0.0.0.0'
+    print(f'✓  Site:  http://{host}:{port}')
+    print(f'✓  Admin: http://{host}:{port}/admin')
+    print(f'✓  Login: {ADMIN_USER} / (senha via env ADMIN_PASS)')
+    app.run(host=host, port=port, debug=False, threaded=True)

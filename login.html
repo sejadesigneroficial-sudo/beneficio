@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login — Admin INSS</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:#0A0F1E;
+  color:#f1f5f9;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+
+/* Grid de fundo */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+}
+
+/* Glow central */
+body::after{
+  content:'';
+  position:fixed;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(19,81,180,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.card{
+  background:#111827;
+  border:1px solid #1e2d45;
+  border-radius:20px;
+  padding:clamp(32px,5vw,52px);
+  width:100%;
+  max-width:420px;
+  position:relative;
+  z-index:1;
+  box-shadow:0 24px 80px rgba(0,0,0,.5);
+}
+
+/* Barra top colorida */
+.card::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,#1351B4,#FFCD07);
+  border-radius:20px 20px 0 0;
+}
+
+.logo-area{text-align:center;margin-bottom:32px}
+.logo-area svg{margin-bottom:12px}
+.logo-area h1{
+  font-family:'Sora',sans-serif;
+  font-size:1.25rem;font-weight:800;
+  color:#fff;letter-spacing:-.02em;
+}
+.logo-area p{font-size:.82rem;color:#64748b;margin-top:4px}
+
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+label{font-size:.78rem;font-weight:600;color:#94a3b8;letter-spacing:.02em}
+
+input{
+  background:#1a2235;
+  border:1.5px solid #1e2d45;
+  border-radius:10px;
+  padding:13px 16px;
+  font-family:'DM Sans',sans-serif;
+  font-size:.95rem;
+  color:#f1f5f9;
+  outline:none;
+  transition:border-color .2s,box-shadow .2s;
+  width:100%;
+}
+input::placeholder{color:#374151}
+input:focus{border-color:#1351B4;box-shadow:0 0 0 3px rgba(19,81,180,.2)}
+
+.btn-login{
+  width:100%;
+  margin-top:8px;
+  background:linear-gradient(135deg,#1351B4,#0C326F);
+  color:#fff;
+  font-family:'Sora',sans-serif;
+  font-size:1rem;font-weight:700;
+  padding:15px;
+  border-radius:10px;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 6px 24px rgba(19,81,180,.4);
+  transition:opacity .2s,transform .15s;
+  letter-spacing:.02em;
+}
+.btn-login:hover{opacity:.9;transform:translateY(-1px)}
+.btn-login:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.erro{
+  display:none;
+  background:rgba(239,68,68,.1);
+  border:1px solid rgba(239,68,68,.3);
+  color:#fca5a5;
+  border-radius:8px;
+  padding:10px 14px;
+  font-size:.82rem;
+  margin-bottom:16px;
+  text-align:center;
+}
+.erro.show{display:block}
+
+.lock-icon{
+  width:56px;height:56px;
+  background:rgba(19,81,180,.15);
+  border:1px solid rgba(19,81,180,.3);
+  border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;
+  color:#7AAAF5;
+}
+
+.hint{
+  text-align:center;
+  font-size:.72rem;
+  color:#374151;
+  margin-top:20px;
+}
+
+/* Loader spinner */
+.spinner{
+  width:18px;height:18px;
+  border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+  display:none;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo-area">
+    <div class="lock-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+    <h1>Painel Administrativo</h1>
+    <p>INSS Benefício — Acesso restrito</p>
+  </div>
+
+  <div class="erro" id="erro">Usuário ou senha incorretos.</div>
+
+  <form id="loginForm" onsubmit="fazerLogin(event)">
+    <div class="form-group">
+      <label for="usuario">Usuário</label>
+      <input type="text" id="usuario" name="usuario" placeholder="Digite seu usuário" autocomplete="username" required>
+    </div>
+    <div class="form-group">
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" name="senha" placeholder="••••••••" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="btn-login" id="btnLogin">
+      <span id="btnTxt">Entrar no painel</span>
+      <div class="spinner" id="spinner"></div>
+      <svg id="btnArrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </form>
+
+  <p class="hint">Sessão expira em 8 horas automaticamente</p>
+</div>
+
+<script>
+async function fazerLogin(e) {
+  e.preventDefault();
+  const btn     = document.getElementById('btnLogin');
+  const spinner = document.getElementById('spinner');
+  const arrow   = document.getElementById('btnArrow');
+  const txt     = document.getElementById('btnTxt');
+  const erro    = document.getElementById('erro');
+
+  btn.disabled = true;
+  spinner.style.display = 'block';
+  arrow.style.display   = 'none';
+  txt.textContent       = 'Verificando…';
+  erro.classList.remove('show');
+
+  try {
+    const r = await fetch('/api/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        usuario: document.getElementById('usuario').value.trim(),
+        senha:   document.getElementById('senha').value
+      })
+    });
+    const d = await r.json();
+    if (d.ok) {
+      txt.textContent = 'Acessando…';
+      window.location.href = '/admin';
+    } else {
+      erro.textContent = d.erro || 'Usuário ou senha incorretos.';
+      erro.classList.add('show');
+      btn.disabled = false;
+      spinner.style.display = 'none';
+      arrow.style.display   = '';
+      txt.textContent = 'Entrar no painel';
+      document.getElementById('senha').value = '';
+      document.getElementById('senha').focus();
+    }
+  } catch {
+    erro.textContent = 'Erro de conexão. Tente novamente.';
+    erro.classList.add('show');
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    arrow.style.display   = '';
+    txt.textContent = 'Entrar no painel';
+  }
+}
+
+// Se já está logado, redireciona direto
+fetch('/api/me').then(r => r.json()).then(d => {
+  if (d.ok) window.location.href = '/admin';
+}).catch(()=>{});
+</script>
+</body>
+</html>

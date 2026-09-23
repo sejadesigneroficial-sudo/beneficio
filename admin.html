@@ -206,10 +206,11 @@ tr:hover td{background:rgba(255,255,255,.02)}
               <th>Tipo</th>
               <th>Mensagem</th>
               <th>Data/Hora</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="tabelaCads">
-            <tr><td colspan="7" class="empty">Carregando…</td></tr>
+            <tr><td colspan="8" class="empty">Carregando…</td></tr>
           </tbody>
         </table>
       </div>
@@ -255,11 +256,19 @@ function addFeedItem(tipo, dados) {
   while (feed.children.length > 60) feed.removeChild(feed.lastChild);
 }
 
+function excluir(id, btn) {
+  if (!confirm('Excluir este cadastro?')) return;
+  fetch(`/api/admin/cadastro/${id}`, {method:'DELETE'})
+    .then(r => r.json())
+    .then(d => { if (d.ok) btn.closest('tr').remove(); })
+    .catch(() => alert('Erro ao excluir.'));
+}
+
 function renderTabela(cads) {
   const tbody = document.getElementById('tabelaCads');
   document.getElementById('badgeCount').textContent = cads.length;
   if (!cads.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty">Nenhum cadastro ainda.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="empty">Nenhum cadastro ainda.</td></tr>';
     return;
   }
   tbody.innerHTML = cads.map(c => `
@@ -271,6 +280,7 @@ function renderTabela(cads) {
       <td><span class="tag">${esc(c.tipo)}</span></td>
       <td style="max-width:180px;color:var(--muted);font-size:.78rem">${esc(c.mensagem).slice(0,80)}</td>
       <td style="color:var(--muted);font-size:.75rem;white-space:nowrap">${esc(c.criado_em)}</td>
+      <td><button onclick="excluir(${c.id},this)" style="background:#ef4444;border:none;color:#fff;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:.75rem">✕</button></td>
     </tr>`).join('');
 }
 
@@ -321,7 +331,8 @@ function conectarSSE() {
           <td style="color:var(--muted);font-size:.75rem">${esc(d.cpf)}</td>
           <td><span class="tag">${esc(d.tipo)}</span></td>
           <td style="max-width:180px;color:var(--muted);font-size:.78rem">${esc(d.mensagem).slice(0,80)}</td>
-          <td style="color:var(--muted);font-size:.75rem;white-space:nowrap">${esc(d.criado_em)}</td>`;
+          <td style="color:var(--muted);font-size:.75rem;white-space:nowrap">${esc(d.criado_em)}</td>
+          <td><button onclick="excluir(${d.id},this)" style="background:#ef4444;border:none;color:#fff;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:.75rem">✕</button></td>`;
         // Remove "nenhum cadastro" se existir
         if (tbody.querySelector('.empty')) tbody.innerHTML = '';
         tbody.insertBefore(tr, tbody.firstChild);

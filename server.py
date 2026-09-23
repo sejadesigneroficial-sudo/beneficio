@@ -241,6 +241,15 @@ def contato():
     return jsonify(ok=True, id=lid)
 
 # ── API admin (protegida) ────────────────────────────────────
+@app.route('/api/admin/cadastro/<int:cid>', methods=['DELETE'])
+@login_required
+def deletar_cadastro(cid):
+    p = ph()
+    conn = get_conn()
+    execute(conn, f'DELETE FROM cadastros WHERE id={p}', (cid,))
+    conn.close()
+    return jsonify(ok=True)
+
 @app.route('/api/admin/dados')
 @login_required
 def dados():
